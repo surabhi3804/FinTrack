@@ -57,3 +57,9 @@ app.use((err, _req, res, _next) => {
 // ── Start ─────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀  FinTrack backend running on http://localhost:${PORT}`));
+
+
+require('dotenv').config();
+
+// ADD THIS LINE temporarily to debug
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ Found' : '❌ undefined');
