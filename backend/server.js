@@ -17,7 +17,13 @@ const app = express();
 app.set('trust proxy', 1); 
 
 // ── Middleware ────────────────────────────────────────────────
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
+app.use(cors({
+  origin: [
+    'https://fin-track-silk-ten.vercel.app',  // ← your exact URL from the screenshot
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 
 // General rate limit
