@@ -6,7 +6,6 @@ import './Auth.css';
 /* ─────────────────────────────────────────────
    API instance
 ───────────────────────────────────────────── */
-// ✅ REPLACE WITH THIS
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:10000/api',
   timeout: 15000
@@ -49,7 +48,21 @@ export const AuthProvider = ({ children }) => {
     if (!token) { setLoading(false); return; }
     API.get('/auth/me')
       .then(res => setUser(res.data.user))
-      .catch(() => { localStorage.removeItem('ft_token'); localStorage.removeItem('ft_user'); })
+      .catch(() => {
+        // ✅ FIX: Fall back to stored user instead of wiping auth state
+        try {
+          const storedUser = JSON.parse(localStorage.getItem('ft_user'));
+          if (storedUser) {
+            setUser(storedUser);
+          } else {
+            localStorage.removeItem('ft_token');
+            localStorage.removeItem('ft_user');
+          }
+        } catch {
+          localStorage.removeItem('ft_token');
+          localStorage.removeItem('ft_user');
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
