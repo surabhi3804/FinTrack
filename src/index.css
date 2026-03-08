@@ -1,13 +1,98 @@
-body {
+/* ============================================================
+   FINTRACK — Global Styles & CSS Variables
+   Palette: Navy · Teal · Sky Blue · Beige · White
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --navy:        #2F3A7E;
+  --navy-dark:   #1E2655;
+  --navy-deep:   #141A3F;
+  --teal:        #607CBD;
+  --teal-light:  #7C95CC;
+  --teal-dim:    #4A6099;
+  --sky:         #C5D5E6;
+  --sky-light:   #DCE8F2;
+  --sky-pale:    #EBF2F8;
+  --beige:       #F5EFEB;
+  --beige-warm:  #EDE6DF;
+  --white:       #FFFFFF;
+  --white-off:   #F8FBFE;
+
+  --bg:          #EBF2F8;
+  --surface:     #FFFFFF;
+  --surface-2:   #F5EFEB;
+  --surface-3:   #EDE6DF;
+  --border:      #C5D5E6;
+  --border-soft: #D9E6F0;
+
+  --text-primary:   #1E2655;
+  --text-secondary: #4A6099;
+  --text-muted:     #8CA5C2;
+
+  --green:  #2D9E6E;
+  --red:    #C0392B;
+  --blue:   #607CBD;
+
+  --shadow:    0 4px 24px rgba(47, 58, 126, 0.10);
+  --shadow-lg: 0 8px 48px rgba(47, 58, 126, 0.18);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --font:    'DM Sans', sans-serif;
+  --display: 'Playfair Display', serif;
+  --mono:    'DM Mono', monospace;
+
+  --sidebar-w: 280px;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+input, select, button, textarea {
+  font-family: inherit;
+}
+
+button { cursor: pointer; border: none; background: none; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; }
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--sky-pale); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+/* ── Accessibility ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,38 +1,39 @@
-.App {
-  text-align: center;
-}
+/* ── App Shell ─────────────────────────────────────────────── */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* Loading screen */
+.app-loading {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 16px;
+  background: var(--bg);
 }
 
-.App-link {
-  color: #61dafb;
+.app-loading__logo {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700;
+  color: var(--white);
+  font-family: var(--display);
+  animation: app-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(47,58,126,0.3);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-loading__text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
 }
+
+@keyframes app-pulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 8px 32px rgba(47,58,126,0.3); }
+  50%       { transform: scale(1.06); box-shadow: 0 12px 40px rgba(47,58,126,0.45); }
+}
+
+/* App test — keep for CRA compatibility */
+.App { text-align: center; }
