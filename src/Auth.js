@@ -6,7 +6,11 @@ import './Auth.css';
 /* ─────────────────────────────────────────────
    API instance
 ───────────────────────────────────────────── */
-const API = axios.create({ baseURL: '/api', timeout: 15000 });
+// ✅ REPLACE WITH THIS
+const API = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:10000/api',
+  timeout: 15000
+});
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('ft_token');
