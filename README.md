@@ -96,7 +96,11 @@ FinTrack works wherever you are — internet or not.
 - No data loss, no interruptions, no excuses for missing a log
 
 ---
+Frontend URL:  
+https://fin-track-silk-ten.vercel.app
 
+Backend URL:  
+https://fintrack-gtyz.onrender.com
 
 
 > *"The best time to start tracking your finances was yesterday. The second best time is right now."*
