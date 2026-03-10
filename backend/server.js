@@ -14,25 +14,41 @@ const aiRoutes           = require('./routes/ai');
 const { checkSubscriptionReminders } = require('./services/subscriptionService');
 
 const app = express();
-app.set('trust proxy', 1); 
+app.set('trust proxy', 1);
 
 // ── Middleware ────────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    'https://fin-track-silk-ten.vercel.app',  // ← your exact URL from the screenshot
-    'http://localhost:3000'
-  ],
-  credentials: true
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://fin-track-silk-ten.vercel.app',
+      'http://localhost:3000',
+    ];
+    // Allow any Vercel preview deployment URL automatically
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/fin-track-.*\.vercel\.app$/.test(origin)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
 
 // General rate limit
-app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 200,
-  message: { error: 'Too many requests, please try again later.' } }));
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000, max: 200,
+  message: { error: 'Too many requests, please try again later.' }
+}));
 
 // Stricter limit on auth routes
-app.use('/api/auth/', rateLimit({ windowMs: 15 * 60 * 1000, max: 20,
-  message: { error: 'Too many auth attempts, please try again later.' } }));
+app.use('/api/auth/', rateLimit({
+  windowMs: 15 * 60 * 1000, max: 20,
+  message: { error: 'Too many auth attempts, please try again later.' }
+}));
 
 // ── MongoDB ───────────────────────────────────────────────────
 mongoose.connect(process.env.MONGODB_URI)
@@ -61,11 +77,5 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`🚀  FinTrack backend running on http://localhost:${PORT}`));
-
-
-require('dotenv').config();
-
-// ADD THIS LINE temporarily to debug
-console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ Found' : '❌ undefined');
