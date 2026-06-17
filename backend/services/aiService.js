@@ -1,49 +1,47 @@
 /**
  * services/aiService.js
  * AI-powered expense categorization, voice parsing, budget suggestions, and forecasting.
- * Uses the Anthropic Claude API via fetch (no SDK needed).
+ * Uses Groq API via fetch (no SDK needed).
  */
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL             = 'claude-sonnet-4-20250514';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const CATEGORIES = [
-  'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
-  'Health & Medical', 'Bills & Utilities', 'Education', 'Travel',
-  'Groceries', 'Personal Care', 'Subscriptions', 'Investments',
-  'Housing', 'Gifts & Donations', 'Others',
+  'Food','Rent','Travel','Entertainment','Utilities',
+  'Healthcare','Shopping','Education','Subscriptions','Transport','Others'
 ];
 
-// ─── Helper: call Claude API ──────────────────────────────────────────────────
+// ─── Helper: call Groq API ────────────────────────────────────────────────────
 async function callClaude(prompt, systemPrompt = '') {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set in environment variables.');
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('GROQ_API_KEY is not set in environment variables.');
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method:  'POST',
+  const response = await fetch(GROQ_API_URL, {
+    method: 'POST',
     headers: {
-      'Content-Type':      'application/json',
-      'x-api-key':         apiKey,
-      'anthropic-version': '2023-06-01',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model:      MODEL,
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 1024,
-      system:     systemPrompt,
-      messages:   [{ role: 'user', content: prompt }],
+      messages: [
+        ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
+        { role: 'user', content: prompt },
+      ],
     }),
   });
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Claude API error ${response.status}: ${err}`);
+    throw new Error(`Groq API error ${response.status}: ${err}`);
   }
 
   const data = await response.json();
-  return data.content?.[0]?.text?.trim() ?? '';
+  return data.choices?.[0]?.message?.content?.trim() ?? '';
 }
 
-// ─── Helper: safely parse JSON from Claude's response ────────────────────────
+// ─── Helper: safely parse JSON from response ──────────────────────────────────
 function parseJSON(text) {
   try {
     const clean = text.replace(/```json|```/g, '').trim();
@@ -225,8 +223,8 @@ Respond with:
   }
 
   // Fallback: average of last 3 months
-  const months  = Object.values(byMonth);
-  const recent  = months.slice(-3);
+  const months   = Object.values(byMonth);
+  const recent   = months.slice(-3);
   const avgTotal = Math.round(recent.reduce((s, m) => s + m.total, 0) / recent.length);
   return {
     forecastedTotal: avgTotal,

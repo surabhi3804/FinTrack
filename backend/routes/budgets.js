@@ -1,3 +1,4 @@
+//backend/routes/budgets.js
 const express  = require('express');
 const Budget   = require('../models/Budget');
 const { protect } = require('../middleware/auth');

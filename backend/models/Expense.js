@@ -1,3 +1,4 @@
+//backend/models/expense.js
 const mongoose = require('mongoose');
 
 const CATEGORIES = [

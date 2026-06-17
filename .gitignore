@@ -25,3 +25,5 @@ yarn-error.log*
 # Environment variables — never commit these
 .env
 backend/.env
+.vercel
+.env*.local

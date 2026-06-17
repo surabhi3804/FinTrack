@@ -23,7 +23,6 @@ app.use(cors({
       'https://fin-track-silk-ten.vercel.app',
       'http://localhost:3000',
     ];
-    // Allow any Vercel preview deployment URL automatically
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
@@ -38,16 +37,16 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 
-// General rate limit
-app.use('/api/', rateLimit({
-  windowMs: 15 * 60 * 1000, max: 200,
-  message: { error: 'Too many requests, please try again later.' }
-}));
-
-// Stricter limit on auth routes
+// Stricter limit on auth routes first
 app.use('/api/auth/', rateLimit({
   windowMs: 15 * 60 * 1000, max: 20,
   message: { error: 'Too many auth attempts, please try again later.' }
+}));
+
+// General rate limit after
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000, max: 200,
+  message: { error: 'Too many requests, please try again later.' }
 }));
 
 // ── MongoDB ───────────────────────────────────────────────────
@@ -77,5 +76,5 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀  FinTrack backend running on http://localhost:${PORT}`));

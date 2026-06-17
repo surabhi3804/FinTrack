@@ -1,3 +1,4 @@
+//backend/routes/auth.js
 const express   = require('express');
 const { body, validationResult } = require('express-validator');
 const User    = require('../models/User');

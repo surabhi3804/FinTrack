@@ -7,7 +7,7 @@ import './Auth.css';
    API instance
 ───────────────────────────────────────────── */
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:10000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
   timeout: 60000
 });
 
@@ -49,7 +49,6 @@ export const AuthProvider = ({ children }) => {
     API.get('/auth/me')
       .then(res => setUser(res.data.user))
       .catch(() => {
-        // ✅ FIX: Fall back to stored user instead of wiping auth state
         try {
           const storedUser = JSON.parse(localStorage.getItem('ft_user'));
           if (storedUser) {
@@ -223,7 +222,6 @@ export const Login = () => {
               </div>
             )}
 
-            {/* Username */}
             <div className="auth-field">
               <label className="auth-label">Username</label>
               <div className="auth-input-wrap">
@@ -238,7 +236,6 @@ export const Login = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div className="auth-field">
               <label className="auth-label">Password</label>
               <div className="auth-input-wrap">
@@ -371,7 +368,6 @@ export const Signup = () => {
               </div>
             ))}
 
-            {/* Password */}
             <div className="auth-field">
               <label className="auth-label">Password</label>
               <div className="auth-input-wrap">
@@ -403,7 +399,6 @@ export const Signup = () => {
               )}
             </div>
 
-            {/* Confirm */}
             <div className="auth-field">
               <label className="auth-label">Confirm Password</label>
               <div className="auth-input-wrap">

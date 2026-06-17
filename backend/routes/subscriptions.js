@@ -1,3 +1,4 @@
+//backend/routes/subscriptions.js
 const express      = require('express');
 const Subscription = require('../models/Subscription');
 const { protect }  = require('../middleware/auth');
@@ -5,6 +6,7 @@ const { protect }  = require('../middleware/auth');
 const router = express.Router();
 router.use(protect);
 
+// GET /api/subscriptions
 router.get('/', async (req, res) => {
   try {
     const subs = await Subscription.find({ user: req.user._id, active: true }).sort({ nextRenewalDate: 1 });
@@ -12,15 +14,21 @@ router.get('/', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to fetch subscriptions.' }); }
 });
 
+// GET /api/subscriptions/upcoming
 router.get('/upcoming', async (req, res) => {
   try {
     const days  = Number(req.query.days) || 7;
     const until = new Date(); until.setDate(until.getDate() + days);
-    const subs  = await Subscription.find({ user: req.user._id, active: true, nextRenewalDate: { $lte: until } }).sort({ nextRenewalDate: 1 });
+    const subs  = await Subscription.find({
+      user: req.user._id,
+      active: true,
+      nextRenewalDate: { $lte: until },
+    }).sort({ nextRenewalDate: 1 });
     res.json({ upcoming: subs });
   } catch { res.status(500).json({ error: 'Failed to fetch upcoming renewals.' }); }
 });
 
+// POST /api/subscriptions
 router.post('/', async (req, res) => {
   try {
     const { name, amount, billingCycle, nextRenewalDate, icon, color } = req.body;
@@ -57,6 +65,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /api/subscriptions/:id
 router.put('/:id', async (req, res) => {
   try {
     const sub = await Subscription.findOneAndUpdate(
@@ -69,6 +78,7 @@ router.put('/:id', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to update.' }); }
 });
 
+// DELETE /api/subscriptions/:id  (soft delete — sets active: false)
 router.delete('/:id', async (req, res) => {
   try {
     await Subscription.findOneAndUpdate(

@@ -1,3 +1,4 @@
+//backend/routes/expenses.js
 const express  = require('express');
 const Expense  = require('../models/Expense');
 const User     = require('../models/User');
@@ -27,6 +28,21 @@ router.get('/', async (req, res) => {
     ]);
     res.json({ expenses, total, page: Number(page) });
   } catch { res.status(500).json({ error: 'Failed to fetch expenses.' }); }
+});
+
+// GET /api/expenses/summary  ← MUST be before /:id
+router.get('/summary', async (req, res) => {
+  try {
+    const now = new Date();
+    const m = Number(req.query.month) || now.getMonth() + 1;
+    const y = Number(req.query.year)  || now.getFullYear();
+    const summary = await Expense.aggregate([
+      { $match: { user: req.user._id, date: { $gte: new Date(y, m - 1, 1), $lte: new Date(y, m, 0, 23, 59, 59) } } },
+      { $group: { _id: '$category', total: { $sum: '$amount' }, count: { $sum: 1 } } },
+      { $sort: { total: -1 } },
+    ]);
+    res.json({ summary, totalSpent: summary.reduce((s, c) => s + c.total, 0), month: m, year: y });
+  } catch { res.status(500).json({ error: 'Failed to get summary.' }); }
 });
 
 // POST /api/expenses
@@ -75,11 +91,15 @@ router.post('/bulk-sync', async (req, res) => {
         if (existing) { results.push({ clientId: e.clientId, status: 'duplicate' }); continue; }
       }
       let cat = e.category;
-      if (!cat || cat === 'Others') { const ai = await categorizeExpense(e.name, req.user); cat = ai.category; }
+      if (!cat || cat === 'Others') {
+        const ai = await categorizeExpense(e.name, req.user);
+        cat = ai.category;
+      }
       const expense = await Expense.create({
         user: req.user._id, name: e.name, amount: e.amount, category: cat,
         date: e.date ? new Date(e.date) : new Date(),
-        notes: e.notes || '', voiceInput: e.voiceInput || null, clientId: e.clientId || null, syncedAt: new Date(),
+        notes: e.notes || '', voiceInput: e.voiceInput || null,
+        clientId: e.clientId || null, syncedAt: new Date(),
       });
       results.push({ clientId: e.clientId, expense, status: 'created' });
     }
@@ -116,21 +136,6 @@ router.delete('/:id', async (req, res) => {
     if (!expense) return res.status(404).json({ error: 'Expense not found.' });
     res.json({ message: 'Deleted.', id: req.params.id });
   } catch { res.status(500).json({ error: 'Failed to delete expense.' }); }
-});
-
-// GET /api/expenses/summary
-router.get('/summary', async (req, res) => {
-  try {
-    const now = new Date();
-    const m = Number(req.query.month) || now.getMonth() + 1;
-    const y = Number(req.query.year)  || now.getFullYear();
-    const summary = await Expense.aggregate([
-      { $match: { user: req.user._id, date: { $gte: new Date(y, m - 1, 1), $lte: new Date(y, m, 0, 23, 59, 59) } } },
-      { $group: { _id: '$category', total: { $sum: '$amount' }, count: { $sum: 1 } } },
-      { $sort: { total: -1 } },
-    ]);
-    res.json({ summary, totalSpent: summary.reduce((s, c) => s + c.total, 0), month: m, year: y });
-  } catch { res.status(500).json({ error: 'Failed to get summary.' }); }
 });
 
 module.exports = router;

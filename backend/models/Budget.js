@@ -1,3 +1,4 @@
+//backend/models/budget.js
 const mongoose = require('mongoose');
 
 const budgetSchema = new mongoose.Schema({
@@ -6,7 +7,8 @@ const budgetSchema = new mongoose.Schema({
   year:          { type: Number, required: true },
   monthlyIncome: { type: Number, default: 0 },
   categoryLimits:      { type: Map, of: Number, default: {} },
-  aiSuggestedLimits:   { type: Map, of: Number, default: {} },
+  aiSuggestedLimits:   { type: 
+    Map, of: Number, default: {} },
   aiSuggestionAccepted:{ type: Boolean, default: false },
   totalBudget:   { type: Number, default: 0 },
 }, { timestamps: true });
